@@ -123,8 +123,8 @@
       <div class="card-label">Jestler</div>
       <div class="gesture-list">
         <div class="gesture-row" id="row-OPEN_HAND"><div class="gesture-left"><div class="gesture-icon">✋</div><span class="gesture-name">Acik el</span></div><span class="gesture-action">Cal / Durdur</span></div>
-        <div class="gesture-row" id="row-THUMB_UP"><div class="gesture-left"><div class="gesture-icon">👍</div><span class="gesture-name">Basparmak yukari</span></div><span class="gesture-action">Ses ac</span></div>
-        <div class="gesture-row" id="row-THUMB_SIDE"><div class="gesture-left"><div class="gesture-icon">👉</div><span class="gesture-name">Basparmak yana</span></div><span class="gesture-action">Ses kis</span></div>
+        <div class="gesture-row" id="row-THUMB_UP"><div class="gesture-left"><div class="gesture-icon">🤌</div><span class="gesture-name">Bas+Isaret Acik</span></div><span class="gesture-action">Ses ac</span></div>
+        <div class="gesture-row" id="row-THUMB_SIDE"><div class="gesture-left"><div class="gesture-icon">👌</div><span class="gesture-name">Bas+Isaret Kapali</span></div><span class="gesture-action">Ses kis</span></div>
         <div class="gesture-row" id="row-POINT_UP"><div class="gesture-left"><div class="gesture-icon">☝️</div><span class="gesture-name">Isaret parmagi</span></div><span class="gesture-action">Sonraki</span></div>
         <div class="gesture-row" id="row-PEACE"><div class="gesture-left"><div class="gesture-icon">✌️</div><span class="gesture-name">V Isareti</span></div><span class="gesture-action">Onceki</span></div>
       </div>
@@ -152,7 +152,7 @@ let youtubeTabId = null;
 const REDIRECT_URI = 'https://connectivista.github.io/gesture-control/';
 const SCOPES = 'user-modify-playback-state user-read-playback-state';
 
-const GESTURE_LABELS = { OPEN_HAND:'Acik El', THUMB_UP:'Basparmak Yukari', THUMB_SIDE:'Basparmak Yana', POINT_UP:'Isaret Parmagi', PEACE:'V Isareti' };
+const GESTURE_LABELS = { OPEN_HAND:'Acik El', THUMB_UP:'Bas+Isaret Acik', THUMB_SIDE:'Bas+Isaret Kapali', POINT_UP:'Isaret Parmagi', PEACE:'V Isareti' };
 const GESTURE_ACTIONS = { OPEN_HAND:'Cal / Durdur', THUMB_UP:'Ses Ac', THUMB_SIDE:'Ses Kis', POINT_UP:'Sonraki Sarki', PEACE:'Onceki Sarki' };
 const THRESHOLDS = { THUMB_UP:6, THUMB_SIDE:6, OPEN_HAND:12, POINT_UP:12, PEACE:12 };
 const COOLDOWNS = { THUMB_UP:800, THUMB_SIDE:800, OPEN_HAND:1500, POINT_UP:1500, PEACE:1500 };
@@ -385,7 +385,11 @@ function fingersUp(lm) {
   return f;
 }
 function isStrictFist(lm) { return [8,12,16,20].every(i=>Math.abs(lm[i].y-lm[0].y)<=0.15); }
-function isThumbSide(lm) { return Math.abs(lm[4].x-lm[2].x)>Math.abs(lm[4].y-lm[2].y) && fingersUp(lm).slice(1).every(v=>v===0); }
+function pinchDistance(lm) {
+  const dx = lm[4].x - lm[8].x;
+  const dy = lm[4].y - lm[8].y;
+  return Math.sqrt(dx*dx + dy*dy);
+}
 
 function recognize(lm, handedness) {
   if(!lm){buffer=[];prevRaw=null;return null;}
@@ -394,8 +398,9 @@ function recognize(lm, handedness) {
   let raw;
   if(f.join('')==='11111') raw='OPEN_HAND';
   else if(f.join('')==='01000') raw='POINT_UP';
-  else if(f[0]===1&&f.slice(1).every(v=>v===0)&&!isThumbSide(lm)) raw='THUMB_UP';
-  else if(isThumbSide(lm)) raw='THUMB_SIDE';
+  else if(f[0]===1&&f[1]===1&&f[2]===0&&f[3]===0&&f[4]===0) {
+    raw = pinchDistance(lm) > 0.08 ? 'THUMB_UP' : 'THUMB_SIDE';
+  }
   else if(f.join('')==='00000'&&isStrictFist(lm)) raw='FIST';
   else raw='UNKNOWN';
   if(raw!==prevRaw) buffer=[];
