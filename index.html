@@ -264,7 +264,10 @@ async function execSpotifyAction(gesture) {
         });
         return 'Durduruldu';
       } else {
-        await fetch('https://api.spotify.com/v1/me/player/play', {
+        const devices = await spotifyAPI('GET', '/me/player/devices');
+        const device = devices?.devices?.find(d => d.is_active) || devices?.devices?.[0];
+        const deviceQuery = device ? '?device_id=' + device.id : '';
+        await fetch('https://api.spotify.com/v1/me/player/play' + deviceQuery, {
           method: 'PUT',
           headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
           body: JSON.stringify({})
