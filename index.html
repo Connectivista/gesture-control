@@ -126,7 +126,7 @@
         <div class="gesture-row" id="row-THUMB_UP"><div class="gesture-left"><div class="gesture-icon">👍</div><span class="gesture-name">Basparmak yukari</span></div><span class="gesture-action">Ses ac</span></div>
         <div class="gesture-row" id="row-THUMB_SIDE"><div class="gesture-left"><div class="gesture-icon">👉</div><span class="gesture-name">Basparmak yana</span></div><span class="gesture-action">Ses kis</span></div>
         <div class="gesture-row" id="row-POINT_UP"><div class="gesture-left"><div class="gesture-icon">☝️</div><span class="gesture-name">Isaret parmagi</span></div><span class="gesture-action">Sonraki</span></div>
-        <div class="gesture-row" id="row-FIST"><div class="gesture-left"><div class="gesture-icon">✊</div><span class="gesture-name">Yumruk</span></div><span class="gesture-action">Onceki</span></div>
+        <div class="gesture-row" id="row-PEACE"><div class="gesture-left"><div class="gesture-icon">✌️</div><span class="gesture-name">V Isareti</span></div><span class="gesture-action">Onceki</span></div>
       </div>
     </div>
     <div class="card">
@@ -152,10 +152,10 @@ let youtubeTabId = null;
 const REDIRECT_URI = 'https://connectivista.github.io/gesture-control/';
 const SCOPES = 'user-modify-playback-state user-read-playback-state';
 
-const GESTURE_LABELS = { OPEN_HAND:'Acik El', THUMB_UP:'Basparmak Yukari', THUMB_SIDE:'Basparmak Yana', POINT_UP:'Isaret Parmagi', FIST:'Yumruk' };
-const GESTURE_ACTIONS = { OPEN_HAND:'Cal / Durdur', THUMB_UP:'Ses Ac', THUMB_SIDE:'Ses Kis', POINT_UP:'Sonraki Sarki', FIST:'Onceki Sarki' };
-const THRESHOLDS = { THUMB_UP:6, THUMB_SIDE:6, OPEN_HAND:12, POINT_UP:12, FIST:12 };
-const COOLDOWNS = { THUMB_UP:800, THUMB_SIDE:800, OPEN_HAND:1500, POINT_UP:1500, FIST:1500 };
+const GESTURE_LABELS = { OPEN_HAND:'Acik El', THUMB_UP:'Basparmak Yukari', THUMB_SIDE:'Basparmak Yana', POINT_UP:'Isaret Parmagi', PEACE:'V Isareti' };
+const GESTURE_ACTIONS = { OPEN_HAND:'Cal / Durdur', THUMB_UP:'Ses Ac', THUMB_SIDE:'Ses Kis', POINT_UP:'Sonraki Sarki', PEACE:'Onceki Sarki' };
+const THRESHOLDS = { THUMB_UP:6, THUMB_SIDE:6, OPEN_HAND:12, POINT_UP:12, PEACE:12 };
+const COOLDOWNS = { THUMB_UP:800, THUMB_SIDE:800, OPEN_HAND:1500, POINT_UP:1500, PEACE:1500 };
 
 let accessToken = null;
 let handLandmarker = null;
@@ -331,7 +331,7 @@ async function execYoutubeAction(gesture) {
 
     POINT_UP: 'YouTube: Sonraki',
 
-    FIST: 'YouTube: Onceki',
+    PEACE: 'YouTube: Onceki',
 
     THUMB_UP: 'YouTube: Ses Ac (ok yukari)',
 
@@ -360,7 +360,7 @@ async function execSpotifyAction(gesture) {
       }
     }
     case 'POINT_UP': await spotifyAPI('POST', '/me/player/next'); return 'Sonraki Sarki';
-    case 'FIST': await spotifyAPI('POST', '/me/player/previous'); return 'Onceki Sarki';
+    case 'PEACE': await spotifyAPI('POST', '/me/player/previous'); return 'Onceki Sarki';
     case 'THUMB_UP': {
       const vol = Math.min(100, currentVolume + 10);
       await spotifyAPI('PUT', '/me/player/volume?volume_percent=' + vol);
