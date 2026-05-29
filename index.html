@@ -390,7 +390,7 @@ async function toggleCamera() {
   btn.textContent='Yükleniyor...'; btn.disabled=true;
   try {
     if(!handLandmarker) await loadModel();
-    const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}});
+    const stream = await navigator.mediaDevices.getUserMedia({video: true});
     video.srcObject=stream;
     await new Promise(r=>video.onloadedmetadata=r);
     video.play();
