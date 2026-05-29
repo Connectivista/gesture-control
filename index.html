@@ -86,6 +86,36 @@
 </header>
 <main>
   <div class="camera-section">
+    <div id="ytSearchBox" style="display:none; gap:10px; margin-bottom:12px;" class="yt-search">
+
+      <input id="ytInput" type="text" placeholder="YouTube'da ara..."
+
+        style="flex:1; padding:12px 16px; background:var(--surface); border:1px solid var(--border); border-radius:12px; color:var(--white); font-family:'Syne',sans-serif; font-size:14px; outline:none;"
+
+        onkeydown="if(event.key==='Enter') searchYoutube()">
+
+      <button onclick="searchYoutube()"
+
+        style="padding:12px 20px; background:rgba(255,0,0,0.1); border:1px solid rgba(255,0,0,0.3); border-radius:12px; color:#ff4444; font-family:'Syne',sans-serif; font-size:14px; cursor:pointer; white-space:nowrap;">
+
+        Ara
+
+      </button>
+
+    </div>
+
+    <div id="ytResults" style="display:none; flex-direction:column; gap:8px; margin-bottom:12px; max-height:200px; overflow-y:auto;"></div>
+
+    <div id="ytPlayerWrap" style="display:none; position:relative; border-radius:16px; overflow:hidden; border:1px solid var(--border); aspect-ratio:16/9; margin-bottom:12px;">
+
+      <iframe id="ytPlayer" width="100%" height="100%" frameborder="0"
+
+        allow="autoplay; encrypted-media" allowfullscreen style="display:block;" src="about:blank">
+
+      </iframe>
+
+    </div>
+
     <div class="camera-wrap">
       <div class="corner corner-tl"></div><div class="corner corner-tr"></div>
       <div class="corner corner-bl"></div><div class="corner corner-br"></div>
@@ -182,6 +212,46 @@ async function generateCodeChallenge(verifier) {
   const enc = new TextEncoder().encode(verifier);
   const hash = await crypto.subtle.digest('SHA-256', enc);
   return btoa(String.fromCharCode(...new Uint8Array(hash))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+const YOUTUBE_API_KEY = 'AIzaSyBIjS4tPrIc7wBIANwEr7SlPnCfJCkFWzk';
+
+window.searchYoutube = async function() {
+
+  const query = document.getElementById('ytInput').value;
+
+  if (!query) return;
+
+  const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=5&key=${YOUTUBE_API_KEY}`);
+
+  const data = await res.json();
+
+  const results = document.getElementById('ytResults');
+
+  results.style.display = 'flex';
+
+  results.innerHTML = data.items.map(item => `
+
+    <div onclick="playVideo('${item.id.videoId}')" style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;">
+
+      <img src="${item.snippet.thumbnails.default.url}" style="width:60px;border-radius:6px;flex-shrink:0;">
+
+      <span style="font-size:12px;color:var(--white);">${item.snippet.title}</span>
+
+    </div>
+
+  `).join('');
+
+}
+
+window.playVideo = function(videoId) {
+
+  document.getElementById('ytResults').style.display = 'none';
+
+  document.getElementById('ytPlayerWrap').style.display = 'block';
+
+  document.getElementById('ytPlayer').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+
 }
 
 window.toggleYoutube = function() {
