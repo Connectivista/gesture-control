@@ -86,9 +86,55 @@
   .vol-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gray); margin-bottom: 6px; display: flex; justify-content: space-between; }
   .vol-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; }
   .vol-fill { height: 100%; background: var(--spotify); border-radius: 2px; transition: width 0.3s; }
+  .onboarding { position: fixed; inset: 0; background: rgba(10,10,15,0.95); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .onboarding-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 40px; max-width: 480px; width: 100%; text-align: center; }
+  .onboarding-logo { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 20px; font-weight: 800; margin-bottom: 24px; }
+  .onboarding-logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--purple); box-shadow: 0 0 12px var(--purple); }
+  .onboarding-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+  .onboarding-desc { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--gray); margin-bottom: 32px; line-height: 1.6; }
+  .onboarding-steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; text-align: left; }
+  .onboarding-step { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; }
+  .onboarding-step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--purple-dim); border: 1px solid var(--purple-mid); display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--purple); flex-shrink: 0; }
+  .onboarding-step-text { font-size: 13px; color: var(--white); }
+  .onboarding-step-sub { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gray); margin-top: 2px; }
+  .onboarding-btn { width: 100%; padding: 14px; background: var(--purple); border: none; border-radius: 12px; color: #fff; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+  .onboarding-btn:hover { opacity: 0.9; }
 </style>
 </head>
 <body>
+<!-- Onboarding Modal -->
+<div class="onboarding" id="onboarding">
+  <div class="onboarding-card">
+    <div class="onboarding-logo"><div class="onboarding-logo-dot"></div>GestureControl</div>
+    <div class="onboarding-title">El hareketleriyle müzik kontrolü</div>
+    <div class="onboarding-desc">Yemek yaparken, eliniz meşgulken — kameranıza bakın ve jest yapın.</div>
+    <div class="onboarding-steps">
+      <div class="onboarding-step">
+        <div class="onboarding-step-num">1</div>
+        <div>
+          <div class="onboarding-step-text">Spotify veya YouTube seçin</div>
+          <div class="onboarding-step-sub">Spotify için hesabınızla bağlanın</div>
+        </div>
+      </div>
+      <div class="onboarding-step">
+        <div class="onboarding-step-num">2</div>
+        <div>
+          <div class="onboarding-step-text">Kamerayı başlatın</div>
+          <div class="onboarding-step-sub">Kamera erişimine izin verin</div>
+        </div>
+      </div>
+      <div class="onboarding-step">
+        <div class="onboarding-step-num">3</div>
+        <div>
+          <div class="onboarding-step-text">Jest yapın</div>
+          <div class="onboarding-step-sub">✋ Çal/Durdur &nbsp;☝️ Sonraki &nbsp;✌️ Önceki</div>
+        </div>
+      </div>
+    </div>
+    <button class="onboarding-btn" onclick="closeOnboarding()">Başlayalım →</button>
+  </div>
+</div>
+
 <header>
   <div class="logo"><div class="logo-dot"></div>GestureControl</div>
   <div class="header-right">
@@ -164,6 +210,11 @@
 </main>
 
 <script>
+function closeOnboarding() {
+  document.getElementById('onboarding').style.display = 'none';
+  localStorage.setItem('onboarding_seen', '1');
+}
+
 // Global değişkenler
 var ytPlayerObj = null;
 var youtubeMode = false;
@@ -524,6 +575,12 @@ function setStatus(active) {
 }
 
 // Init
+if (!localStorage.getItem('onboarding_seen')) {
+  document.getElementById('onboarding').style.display = 'flex';
+} else {
+  document.getElementById('onboarding').style.display = 'none';
+}
+
 if(window.location.search.includes('code=')) {
   handleCallback();
 } else {
