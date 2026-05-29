@@ -285,11 +285,17 @@ async function execSpotifyAction(gesture) {
   if (!accessToken) return 'Spotify bagli degil';
   switch(gesture) {
     case 'OPEN_HAND': {
-      if (player) {
-        await player.togglePlay();
-        return 'Cal / Durdur';
+      const state = await spotifyAPI('GET', '/me/player');
+      if (!state) return 'Spotify aktif degil';
+      if (state.is_playing) {
+        await spotifyAPI('PUT', '/me/player/pause');
+        return 'Durduruldu';
+      } else {
+        const deviceId = state.device?.id;
+        const url = deviceId ? '/me/player/play?device_id=' + deviceId : '/me/player/play';
+        await spotifyAPI('PUT', url);
+        return 'Caliniyor';
       }
-      return 'Player hazir degil';
     }
     case 'POINT_UP': await spotifyAPI('POST', '/me/player/next'); return 'Sonraki Sarki';
     case 'FIST': await spotifyAPI('POST', '/me/player/previous'); return 'Onceki Sarki';
