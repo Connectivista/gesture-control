@@ -1,0 +1,450 @@
+{\rtf1\ansi\ansicpg1254\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 <!DOCTYPE html>\
+<html lang="tr">\
+<head>\
+<meta charset="UTF-8">\
+<meta name="viewport" content="width=device-width, initial-scale=1.0">\
+<title>GestureControl</title>\
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">\
+<style>\
+  *, *::before, *::after \{ box-sizing: border-box; margin: 0; padding: 0; \}\
+  :root \{\
+    --bg: #0a0a0f; --surface: #12121a; --border: rgba(127,119,221,0.15);\
+    --purple: #7F77DD; --purple-dim: rgba(127,119,221,0.12); --purple-mid: rgba(127,119,221,0.4);\
+    --white: #f0effe; --gray: #6b6a7a; --green: #1D9E75; --green-dim: rgba(29,158,117,0.12);\
+    --red: #E24B4A; --spotify: #1DB954;\
+  \}\
+  body \{ background: var(--bg); color: var(--white); font-family: 'Syne', sans-serif; min-height: 100vh; display: flex; flex-direction: column; \}\
+  body::before \{ content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(127,119,221,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(127,119,221,0.03) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; z-index: 0; \}\
+  header \{ position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 20px 32px; border-bottom: 1px solid var(--border); \}\
+  .logo \{ display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 800; \}\
+  .logo-dot \{ width: 8px; height: 8px; border-radius: 50%; background: var(--purple); \}\
+  .header-right \{ display: flex; align-items: center; gap: 10px; \}\
+  .status-pill \{ display: flex; align-items: center; gap: 7px; font-family: 'DM Mono', monospace; font-size: 11px; padding: 6px 14px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--gray); \}\
+  .status-pill.active \{ border-color: rgba(29,158,117,0.3); background: var(--green-dim); color: var(--green); \}\
+  .status-dot \{ width: 6px; height: 6px; border-radius: 50%; background: var(--gray); \}\
+  .status-pill.active .status-dot \{ background: var(--green); \}\
+  .spotify-btn \{ display: flex; align-items: center; gap: 8px; padding: 7px 16px; border-radius: 100px; border: 1px solid rgba(29,185,84,0.3); background: rgba(29,185,84,0.08); color: var(--spotify); font-family: 'DM Mono', monospace; font-size: 11px; cursor: pointer; \}\
+  .spotify-btn.connected \{ background: rgba(29,185,84,0.2); \}\
+  main \{ position: relative; z-index: 10; flex: 1; display: grid; grid-template-columns: 1fr 300px; gap: 20px; padding: 24px 32px; max-width: 1100px; margin: 0 auto; width: 100%; \}\
+  .camera-section \{ display: flex; flex-direction: column; gap: 16px; \}\
+  .camera-wrap \{ position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); aspect-ratio: 4/3; \}\
+  #video \{ width: 100%; height: 100%; object-fit: cover; display: block; transform: scaleX(-1); \}\
+  .camera-placeholder \{ position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--gray); \}\
+  .camera-placeholder p \{ font-family: 'DM Mono', monospace; font-size: 12px; \}\
+  .corner \{ position: absolute; width: 20px; height: 20px; z-index: 5; \}\
+  .corner-tl \{ top: 12px; left: 12px; border-top: 2px solid var(--purple); border-left: 2px solid var(--purple); \}\
+  .corner-tr \{ top: 12px; right: 12px; border-top: 2px solid var(--purple); border-right: 2px solid var(--purple); \}\
+  .corner-bl \{ bottom: 12px; left: 12px; border-bottom: 2px solid var(--purple); border-left: 2px solid var(--purple); \}\
+  .corner-br \{ bottom: 12px; right: 12px; border-bottom: 2px solid var(--purple); border-right: 2px solid var(--purple); \}\
+  .gesture-overlay \{ position: absolute; bottom: 0; left: 0; right: 0; padding: 16px; background: linear-gradient(transparent, rgba(10,10,15,0.9)); z-index: 5; min-height: 80px; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; \}\
+  .gesture-badge \{ display: inline-flex; align-items: center; background: var(--purple); color: #fff; padding: 6px 14px; border-radius: 100px; font-family: 'DM Mono', monospace; font-size: 12px; opacity: 0; transition: all 0.2s; width: fit-content; \}\
+  .gesture-badge.visible \{ opacity: 1; \}\
+  .progress-bar \{ height: 2px; background: rgba(255,255,255,0.1); border-radius: 2px; \}\
+  .progress-fill \{ height: 100%; background: var(--purple); border-radius: 2px; width: 0%; transition: width 0.1s; \}\
+  .now-playing \{ position: absolute; top: 12px; left: 12px; right: 12px; z-index: 5; display: flex; align-items: center; gap: 10px; background: rgba(10,10,15,0.85); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; opacity: 0; transition: opacity 0.3s; \}\
+  .now-playing.visible \{ opacity: 1; \}\
+  .now-playing-art \{ width: 32px; height: 32px; border-radius: 6px; background: var(--surface); flex-shrink: 0; object-fit: cover; \}\
+  .now-playing-info \{ flex: 1; min-width: 0; \}\
+  .now-playing-title \{ font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; \}\
+  .now-playing-artist \{ font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gray); \}\
+  .start-btn \{ display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; background: var(--purple-dim); border: 1px solid var(--purple-mid); border-radius: 12px; color: var(--purple); font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; \}\
+  .start-btn:hover \{ background: rgba(127,119,221,0.2); \}\
+  .start-btn.running \{ color: var(--red); border-color: rgba(226,75,74,0.4); background: rgba(226,75,74,0.08); \}\
+  .sidebar \{ display: flex; flex-direction: column; gap: 16px; \}\
+  .card \{ background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; \}\
+  .card-label \{ font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--gray); text-transform: uppercase; margin-bottom: 14px; \}\
+  .last-command-value \{ font-size: 22px; font-weight: 800; color: var(--white); min-height: 32px; \}\
+  .last-command-sub \{ font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gray); margin-top: 4px; \}\
+  .flash \{ animation: flash 0.3s ease; \}\
+  @keyframes flash \{ 0% \{ color: var(--purple); \} 100% \{ color: var(--white); \} \}\
+  .gesture-list \{ display: flex; flex-direction: column; gap: 10px; \}\
+  .gesture-row \{ display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 10px; transition: background 0.15s; \}\
+  .gesture-row.highlight \{ background: var(--purple-dim); \}\
+  .gesture-left \{ display: flex; align-items: center; gap: 10px; \}\
+  .gesture-icon \{ width: 32px; height: 32px; border-radius: 8px; background: rgba(127,119,221,0.08); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 15px; \}\
+  .gesture-name \{ font-size: 13px; font-weight: 700; \}\
+  .gesture-action \{ font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gray); background: rgba(255,255,255,0.04); padding: 3px 8px; border-radius: 100px; border: 1px solid var(--border); \}\
+  .log-list \{ display: flex; flex-direction: column; gap: 6px; max-height: 140px; overflow-y: auto; \}\
+  .log-item \{ display: flex; align-items: center; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 11px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); \}\
+  .log-action \{ color: var(--white); \}\
+  .log-time \{ color: var(--gray); \}\
+  .vol-bar-wrap \{ margin-top: 10px; \}\
+  .vol-label \{ font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gray); margin-bottom: 6px; display: flex; justify-content: space-between; \}\
+  .vol-bar \{ height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; \}\
+  .vol-fill \{ height: 100%; background: var(--spotify); border-radius: 2px; transition: width 0.3s; \}\
+</style>\
+</head>\
+<body>\
+<header>\
+  <div class="logo"><div class="logo-dot"></div>GestureControl</div>\
+  <div class="header-right">\
+    <button class="spotify-btn" id="spotifyBtn" onclick="spotifyAuth()">Spotify ile Baglan</button>\
+    <div class="status-pill" id="statusPill"><div class="status-dot"></div><span id="statusText">Hazir</span></div>\
+  </div>\
+</header>\
+<main>\
+  <div class="camera-section">\
+    <div class="camera-wrap">\
+      <div class="corner corner-tl"></div><div class="corner corner-tr"></div>\
+      <div class="corner corner-bl"></div><div class="corner corner-br"></div>\
+      <div class="camera-placeholder" id="placeholder">\
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>\
+        <p>Baslatmak icin asagidaki butona tikla</p>\
+      </div>\
+      <div class="now-playing" id="nowPlaying">\
+        <img class="now-playing-art" id="nowArt" src="" alt="">\
+        <div class="now-playing-info">\
+          <div class="now-playing-title" id="nowTitle">\'97</div>\
+          <div class="now-playing-artist" id="nowArtist">\'97</div>\
+        </div>\
+        <span id="nowState">\uc0\u9208 </span>\
+      </div>\
+      <video id="video" autoplay playsinline style="display:none"></video>\
+      <div class="gesture-overlay">\
+        <div class="gesture-badge" id="gestureBadge">\'97</div>\
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>\
+      </div>\
+    </div>\
+    <button class="start-btn" id="startBtn" onclick="toggleCamera()">Kamerayi Baslat</button>\
+  </div>\
+  <div class="sidebar">\
+    <div class="card">\
+      <div class="card-label">Son komut</div>\
+      <div class="last-command-value" id="lastCommand">\'97</div>\
+      <div class="last-command-sub" id="lastGesture">Henuz jest yapilmadi</div>\
+      <div class="vol-bar-wrap" id="volWrap" style="display:none">\
+        <div class="vol-label"><span>Ses</span><span id="volPct">\'97</span></div>\
+        <div class="vol-bar"><div class="vol-fill" id="volFill" style="width:0%"></div></div>\
+      </div>\
+    </div>\
+    <div class="card">\
+      <div class="card-label">Jestler</div>\
+      <div class="gesture-list">\
+        <div class="gesture-row" id="row-OPEN_HAND"><div class="gesture-left"><div class="gesture-icon">\uc0\u9995 </div><span class="gesture-name">Acik el</span></div><span class="gesture-action">Cal / Durdur</span></div>\
+        <div class="gesture-row" id="row-THUMB_UP"><div class="gesture-left"><div class="gesture-icon">\uc0\u55357 \u56397 </div><span class="gesture-name">Basparmak yukari</span></div><span class="gesture-action">Ses ac</span></div>\
+        <div class="gesture-row" id="row-THUMB_SIDE"><div class="gesture-left"><div class="gesture-icon">\uc0\u55357 \u56393 </div><span class="gesture-name">Basparmak yana</span></div><span class="gesture-action">Ses kis</span></div>\
+        <div class="gesture-row" id="row-POINT_UP"><div class="gesture-left"><div class="gesture-icon">\uc0\u9757 \u65039 </div><span class="gesture-name">Isaret parmagi</span></div><span class="gesture-action">Sonraki</span></div>\
+        <div class="gesture-row" id="row-FIST"><div class="gesture-left"><div class="gesture-icon">\uc0\u9994 </div><span class="gesture-name">Yumruk</span></div><span class="gesture-action">Onceki</span></div>\
+      </div>\
+    </div>\
+    <div class="card">\
+      <div class="card-label">Gecmis</div>\
+      <div class="log-list" id="logList">\
+        <div class="log-item"><span class="log-action" style="color:var(--gray)">Henuz komut yok</span></div>\
+      </div>\
+    </div>\
+  </div>\
+</main>\
+\
+<script src="https://sdk.scdn.co/spotify-player.js"></script>\
+<script type="module">\
+import \{ FilesetResolver, HandLandmarker \} from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs';\
+\
+const CLIENT_ID = 'c4b23c55e2144b70be08d462d1608556';\
+const REDIRECT_URI = 'https://connectivista.github.io/gesture-control/';\
+const SCOPES = 'user-modify-playback-state user-read-playback-state';\
+\
+const GESTURE_LABELS = \{ OPEN_HAND:'Acik El', THUMB_UP:'Basparmak Yukari', THUMB_SIDE:'Basparmak Yana', POINT_UP:'Isaret Parmagi', FIST:'Yumruk' \};\
+const GESTURE_ACTIONS = \{ OPEN_HAND:'Cal / Durdur', THUMB_UP:'Ses Ac', THUMB_SIDE:'Ses Kis', POINT_UP:'Sonraki Sarki', FIST:'Onceki Sarki' \};\
+const THRESHOLDS = \{ THUMB_UP:6, THUMB_SIDE:6, OPEN_HAND:12, POINT_UP:12, FIST:12 \};\
+const COOLDOWNS = \{ THUMB_UP:800, THUMB_SIDE:800, OPEN_HAND:1500, POINT_UP:1500, FIST:1500 \};\
+\
+let accessToken = null;\
+let handLandmarker = null;\
+let running = false;\
+let animFrame = null;\
+let buffer = [], prevRaw = null, handSide = 'Right';\
+let lastGesture = null, lastActionTime = \{\};\
+let logItems = [];\
+let currentVolume = 50;\
+let nowPlayingInterval = null;\
+let player = null;\
+let deviceId = null;\
+\
+const video = document.getElementById('video');\
+\
+// Spotify PKCE Auth\
+function generateCodeVerifier() \{\
+  const arr = new Uint8Array(32);\
+  crypto.getRandomValues(arr);\
+  return btoa(String.fromCharCode(...arr)).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=/g,'');\
+\}\
+\
+async function generateCodeChallenge(verifier) \{\
+  const enc = new TextEncoder().encode(verifier);\
+  const hash = await crypto.subtle.digest('SHA-256', enc);\
+  return btoa(String.fromCharCode(...new Uint8Array(hash))).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=/g,'');\
+\}\
+\
+window.spotifyAuth = async function() \{\
+  if (accessToken) \{ disconnectSpotify(); return; \}\
+  const verifier = generateCodeVerifier();\
+  const challenge = await generateCodeChallenge(verifier);\
+  localStorage.setItem('pkce_verifier', verifier);\
+  const params = new URLSearchParams(\{\
+    client_id: CLIENT_ID, response_type: 'code',\
+    redirect_uri: REDIRECT_URI, scope: SCOPES,\
+    code_challenge_method: 'S256', code_challenge: challenge\
+  \});\
+  window.location = 'https://accounts.spotify.com/authorize?' + params;\
+\}\
+\
+async function handleCallback() \{\
+  const params = new URLSearchParams(window.location.search);\
+  const code = params.get('code');\
+  if (!code) return;\
+  const verifier = localStorage.getItem('pkce_verifier');\
+  const res = await fetch('https://accounts.spotify.com/api/token', \{\
+    method: 'POST',\
+    headers: \{ 'Content-Type': 'application/x-www-form-urlencoded' \},\
+    body: new URLSearchParams(\{ client_id: CLIENT_ID, grant_type: 'authorization_code', code, redirect_uri: REDIRECT_URI, code_verifier: verifier \})\
+  \});\
+  const data = await res.json();\
+  if (data.access_token) \{\
+    accessToken = data.access_token;\
+    localStorage.setItem('spotify_token', accessToken);\
+    window.history.replaceState(\{\}, '', REDIRECT_URI);\
+    setSpotifyConnected(true);\
+    initPlayer();\
+    startNowPlayingPolling();\
+  \}\
+\}\
+\
+function disconnectSpotify() \{\
+  accessToken = null;\
+  localStorage.removeItem('spotify_token');\
+  clearInterval(nowPlayingInterval);\
+  document.getElementById('nowPlaying').classList.remove('visible');\
+  setSpotifyConnected(false);\
+\}\
+\
+function setSpotifyConnected(connected) \{\
+  const btn = document.getElementById('spotifyBtn');\
+  btn.textContent = connected ? 'Bagli \'97 Cikis' : 'Spotify ile Baglan';\
+  btn.className = 'spotify-btn' + (connected ? ' connected' : '');\
+\}\
+\
+async function spotifyAPI(method, endpoint, body) \{\
+  if (!accessToken) return null;\
+  const res = await fetch('https://api.spotify.com/v1' + endpoint, \{\
+    method,\
+    headers: \{ Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' \},\
+    body: body ? JSON.stringify(body) : undefined\
+  \});\
+  if (res.status === 204) return \{\};\
+  if (res.ok) return res.json().catch(() => (\{\}));\
+  if (res.status === 401) \{ disconnectSpotify(); return null; \}\
+  return null;\
+\}\
+\
+function initPlayer() \{\
+  window.onSpotifyWebPlaybackSDKReady = () => \{\
+    player = new Spotify.Player(\{\
+      name: 'GestureControl',\
+      getOAuthToken: cb => cb(accessToken),\
+      volume: 0.5\
+    \});\
+    player.addListener('ready', (\{ device_id \}) => \{\
+      deviceId = device_id;\
+      console.log('Spotify player hazir, device_id:', device_id);\
+    \});\
+    player.addListener('player_state_changed', state => \{\
+      if (!state) return;\
+      const track = state.track_window.current_track;\
+      document.getElementById('nowTitle').textContent = track.name;\
+      document.getElementById('nowArtist').textContent = track.artists.map(a=>a.name).join(', ');\
+      const art = document.getElementById('nowArt');\
+      if (track.album.images[0]) art.src = track.album.images[0].url;\
+      document.getElementById('nowState').textContent = state.paused ? '\uc0\u9208 ' : '\u9654 ';\
+      document.getElementById('nowPlaying').classList.add('visible');\
+    \});\
+    player.connect();\
+  \};\
+\}\
+\
+async function startNowPlayingPolling() \{\
+  const update = async () => \{\
+    const data = await spotifyAPI('GET', '/me/player');\
+    if (!data || !data.item) return;\
+    document.getElementById('nowTitle').textContent = data.item.name;\
+    document.getElementById('nowArtist').textContent = data.item.artists.map(a=>a.name).join(', ');\
+    const art = document.getElementById('nowArt');\
+    if (data.item.album.images[0]) art.src = data.item.album.images[0].url;\
+    document.getElementById('nowState').textContent = data.is_playing ? '\uc0\u9654 ' : '\u9208 ';\
+    document.getElementById('nowPlaying').classList.add('visible');\
+    currentVolume = data.device?.volume_percent ?? 50;\
+    document.getElementById('volWrap').style.display = 'block';\
+    document.getElementById('volPct').textContent = currentVolume + '%';\
+    document.getElementById('volFill').style.width = currentVolume + '%';\
+  \};\
+  update();\
+  nowPlayingInterval = setInterval(update, 3000);\
+\}\
+\
+async function execSpotifyAction(gesture) \{\
+  if (!accessToken) return 'Spotify bagli degil';\
+  switch(gesture) \{\
+    case 'OPEN_HAND': \{\
+      const state = await spotifyAPI('GET', '/me/player');\
+      if (!state) return 'Spotify aktif degil';\
+      if (state.is_playing) \{\
+        await spotifyAPI('PUT', '/me/player/pause');\
+        return 'Durduruldu';\
+      \} else \{\
+        const deviceId = state.device?.id;\
+        const url = deviceId ? '/me/player/play?device_id=' + deviceId : '/me/player/play';\
+        await spotifyAPI('PUT', url);\
+        return 'Caliniyor';\
+      \}\
+    \}\
+    case 'POINT_UP': await spotifyAPI('POST', '/me/player/next'); return 'Sonraki Sarki';\
+    case 'FIST': await spotifyAPI('POST', '/me/player/previous'); return 'Onceki Sarki';\
+    case 'THUMB_UP': \{\
+      const vol = Math.min(100, currentVolume + 10);\
+      await spotifyAPI('PUT', '/me/player/volume?volume_percent=' + vol);\
+      currentVolume = vol;\
+      return 'Ses: ' + vol + '%';\
+    \}\
+    case 'THUMB_SIDE': \{\
+      const vol = Math.max(0, currentVolume - 10);\
+      await spotifyAPI('PUT', '/me/player/volume?volume_percent=' + vol);\
+      currentVolume = vol;\
+      return 'Ses: ' + vol + '%';\
+    \}\
+  \}\
+  return GESTURE_ACTIONS[gesture] || gesture;\
+\}\
+\
+// Gesture recognition\
+function fingersUp(lm) \{\
+  const tips = [4,8,12,16,20]; const f = [];\
+  f.push(handSide==='Right' ? (lm[tips[0]].x<lm[tips[0]-1].x?1:0) : (lm[tips[0]].x>lm[tips[0]-1].x?1:0));\
+  for(let i=1;i<5;i++) f.push(lm[tips[i]].y<lm[tips[i]-2].y?1:0);\
+  return f;\
+\}\
+function isStrictFist(lm) \{ return [8,12,16,20].every(i=>Math.abs(lm[i].y-lm[0].y)<=0.15); \}\
+function isThumbSide(lm) \{ return Math.abs(lm[4].x-lm[2].x)>Math.abs(lm[4].y-lm[2].y) && fingersUp(lm).slice(1).every(v=>v===0); \}\
+\
+function recognize(lm, handedness) \{\
+  if(!lm)\{buffer=[];prevRaw=null;return null;\}\
+  handSide = handedness==='Right'?'Left':'Right';\
+  const f = fingersUp(lm);\
+  let raw;\
+  if(f.join('')==='11111') raw='OPEN_HAND';\
+  else if(f.join('')==='01000') raw='POINT_UP';\
+  else if(f[0]===1&&f.slice(1).every(v=>v===0)&&!isThumbSide(lm)) raw='THUMB_UP';\
+  else if(isThumbSide(lm)) raw='THUMB_SIDE';\
+  else if(f.join('')==='00000'&&isStrictFist(lm)) raw='FIST';\
+  else raw='UNKNOWN';\
+  if(raw!==prevRaw) buffer=[];\
+  prevRaw=raw;\
+  if(raw==='UNKNOWN') return null;\
+  buffer.push(raw);\
+  const threshold=THRESHOLDS[raw]||12;\
+  document.getElementById('progressFill').style.width=(Math.min(buffer.length/threshold,1)*100)+'%';\
+  document.getElementById('gestureBadge').textContent=GESTURE_LABELS[raw]||raw;\
+  document.getElementById('gestureBadge').classList.add('visible');\
+  if(buffer.length>=threshold) return raw;\
+  return null;\
+\}\
+\
+async function handleGesture(gesture) \{\
+  if(!gesture) return;\
+  const now = Date.now();\
+  const cooldown = COOLDOWNS[gesture]||1500;\
+  if(lastGesture===gesture&&(now-(lastActionTime[gesture]||0))<cooldown) return;\
+  lastGesture=gesture; lastActionTime[gesture]=now;\
+  const action = await execSpotifyAction(gesture);\
+  const lc = document.getElementById('lastCommand');\
+  lc.textContent=action;\
+  lc.classList.remove('flash');\
+  void lc.offsetWidth;\
+  lc.classList.add('flash');\
+  document.getElementById('lastGesture').textContent=GESTURE_LABELS[gesture]||gesture;\
+  document.querySelectorAll('.gesture-row').forEach(r=>r.classList.remove('highlight'));\
+  const row=document.getElementById('row-'+gesture);\
+  if(row)\{row.classList.add('highlight');setTimeout(()=>row.classList.remove('highlight'),800);\}\
+  const time=new Date().toLocaleTimeString('tr-TR',\{hour:'2-digit',minute:'2-digit',second:'2-digit'\});\
+  logItems.unshift(\{action,time\});\
+  if(logItems.length>20) logItems.pop();\
+  document.getElementById('logList').innerHTML=logItems.map(i=>`<div class="log-item"><span class="log-action">$\{i.action\}</span><span class="log-time">$\{i.time\}</span></div>`).join('');\
+\}\
+\
+// Camera & MediaPipe\
+async function loadModel() \{\
+  const vision = await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');\
+  handLandmarker = await HandLandmarker.createFromOptions(vision, \{\
+    baseOptions: \{\
+      modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',\
+      delegate: 'CPU'\
+    \},\
+    runningMode: 'VIDEO', numHands: 1,\
+    minHandDetectionConfidence: 0.7, minTrackingConfidence: 0.5\
+  \});\
+\}\
+\
+async function detect() \{\
+  if(!running||!handLandmarker) return;\
+  const result = handLandmarker.detectForVideo(video, performance.now());\
+  const lm = result.landmarks?.[0]||null;\
+  const handedness = result.handedness?.[0]?.[0]?.displayName||'Right';\
+  const gesture = recognize(lm, handedness);\
+  if(!lm)\{ document.getElementById('gestureBadge').classList.remove('visible'); document.getElementById('progressFill').style.width='0%'; \}\
+  await handleGesture(gesture);\
+  animFrame = requestAnimationFrame(detect);\
+\}\
+\
+window.toggleCamera = async function() \{\
+  const btn = document.getElementById('startBtn');\
+  if(running)\{\
+    running=false; cancelAnimationFrame(animFrame);\
+    video.srcObject?.getTracks().forEach(t=>t.stop());\
+    video.style.display='none';\
+    document.getElementById('placeholder').style.display='flex';\
+    btn.textContent='Kamerayi Baslat';\
+    btn.classList.remove('running');\
+    setStatus(false); return;\
+  \}\
+  btn.textContent='Yukleniyor...'; btn.disabled=true;\
+  try \{\
+    if(!handLandmarker) await loadModel();\
+    const stream = await navigator.mediaDevices.getUserMedia(\{video: true\});\
+    video.srcObject=stream;\
+    await new Promise(r=>video.onloadedmetadata=r);\
+    video.play();\
+    video.style.display='block';\
+    document.getElementById('placeholder').style.display='none';\
+    running=true; setStatus(true);\
+    btn.textContent='Durdur';\
+    btn.classList.add('running'); btn.disabled=false;\
+    detect();\
+  \} catch(e)\{\
+    console.error('Kamera hatasi:', e);\
+    btn.textContent='Kamera erisimi reddedildi';\
+    btn.disabled=false;\
+  \}\
+\}\
+\
+function setStatus(active) \{\
+  const pill=document.getElementById('statusPill');\
+  pill.className='status-pill'+(active?' active':'');\
+  document.getElementById('statusText').textContent=active?'Kamera aktif':'Hazir';\
+\}\
+\
+// Init\
+if(window.location.search.includes('code=')) \{\
+  handleCallback();\
+\} else \{\
+  const saved = localStorage.getItem('spotify_token');\
+  if(saved)\{ accessToken=saved; setSpotifyConnected(true); initPlayer(); startNowPlayingPolling(); \}\
+\}\
+</script>\
+</body>\
+</html>}
