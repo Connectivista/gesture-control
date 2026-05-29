@@ -39,8 +39,7 @@
   .camera-toggle-btn { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--gray); font-family: "DM Mono", monospace; font-size: 11px; cursor: pointer; white-space: nowrap; }
   .camera-toggle-btn:hover { border-color: var(--purple); color: var(--purple); }
   .yt-player-wrap { resize: vertical; overflow: auto; min-height: 200px; }
-  .yt-player-wrap.cinema { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 50; border-radius: 0; aspect-ratio: unset; }
-  .cinema-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 49; }
+  .yt-player-wrap.cinema { width: 100%; aspect-ratio: 21/9; }
   .camera-wrap { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); aspect-ratio: 4/3; }
   #video { width: 100%; height: 100%; object-fit: cover; display: block; transform: scaleX(-1); }
   .camera-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--gray); }
@@ -186,9 +185,9 @@
       <!-- Camera Col -->
       <div class="camera-col visible" id="cameraCol">
         <button class="camera-toggle-btn" onclick="toggleCameraView()" id="cameraToggleBtn">
-          <span id="cameraToggleIcon">👁</span> Kamerayı Gizle
+          👁 Kamerayı Gizle
         </button>
-        <div class="camera-wrap">
+        <div class="camera-wrap" id="cameraWrap">
       <div class="corner corner-tl"></div><div class="corner corner-tr"></div>
       <div class="corner corner-bl"></div><div class="corner corner-br"></div>
       <div class="camera-placeholder" id="placeholder">
@@ -284,35 +283,26 @@ function toggleCinema() {
   cinemaMode = !cinemaMode;
   const wrap = document.getElementById('ytPlayerWrap');
   const btn = document.getElementById('cinemaBtn');
-  let overlay = document.getElementById('cinemaOverlay');
   if (cinemaMode) {
     wrap.classList.add('cinema');
-    btn.textContent = '✕ Sinema Modundan Çık';
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.id = 'cinemaOverlay';
-      overlay.className = 'cinema-overlay';
-      overlay.onclick = toggleCinema;
-      document.body.appendChild(overlay);
-    }
-    overlay.style.display = 'block';
+    btn.textContent = '✕ Normal Mod';
   } else {
     wrap.classList.remove('cinema');
     btn.textContent = '🎬 Sinema Modu';
-    if (overlay) overlay.style.display = 'none';
   }
+  if (ytPlayerObj) ytPlayerObj.setSize('100%', wrap.offsetHeight);
 }
 
 function toggleCameraView() {
-  const col = document.getElementById('cameraCol');
+  const wrap = document.getElementById('cameraWrap');
   const btn = document.getElementById('cameraToggleBtn');
-  const isHidden = col.style.display === 'none';
+  const isHidden = wrap.style.display === 'none';
   if (isHidden) {
-    col.style.display = 'flex';
-    btn.innerHTML = '👁 Kamerayı Gizle';
+    wrap.style.display = 'block';
+    btn.textContent = '👁 Kamerayı Gizle';
   } else {
-    col.style.display = 'none';
-    btn.innerHTML = '👁 Kamerayı Göster';
+    wrap.style.display = 'none';
+    btn.textContent = '👁 Kamerayı Göster';
   }
 }
 
