@@ -29,8 +29,16 @@
   .spotify-btn.connected { background: rgba(29,185,84,0.2); }
   .yt-btn { display: flex; align-items: center; gap: 8px; padding: 7px 16px; border-radius: 100px; border: 1px solid rgba(255,0,0,0.3); background: rgba(255,0,0,0.08); color: #ff4444; font-family: 'DM Mono', monospace; font-size: 11px; cursor: pointer; }
   .yt-btn.active { background: rgba(255,0,0,0.2); }
-  main { position: relative; z-index: 10; flex: 1; display: grid; grid-template-columns: 1fr 300px; gap: 20px; padding: 24px 32px; max-width: 1100px; margin: 0 auto; width: 100%; }
+  main { position: relative; z-index: 10; flex: 1; display: grid; grid-template-columns: 1fr 300px; gap: 20px; padding: 24px 32px; max-width: 1200px; margin: 0 auto; width: 100%; }
   .left-section { display: flex; flex-direction: column; gap: 16px; }
+  .media-row { display: flex; gap: 16px; align-items: flex-start; }
+  .youtube-col { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .camera-col { display: flex; flex-direction: column; gap: 12px; transition: all 0.3s; }
+  .camera-col.hidden { width: 0; overflow: hidden; opacity: 0; }
+  .camera-col.visible { width: 320px; flex-shrink: 0; }
+  .camera-toggle-btn { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--gray); font-family: "DM Mono", monospace; font-size: 11px; cursor: pointer; white-space: nowrap; }
+  .camera-toggle-btn:hover { border-color: var(--purple); color: var(--purple); }
+  .yt-player-wrap { resize: vertical; overflow: auto; min-height: 200px; }
   .camera-wrap { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); aspect-ratio: 4/3; }
   #video { width: 100%; height: 100%; object-fit: cover; display: block; transform: scaleX(-1); }
   .camera-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--gray); }
@@ -156,19 +164,26 @@
 </header>
 <main>
   <div class="left-section">
-    <!-- YouTube Search & Player -->
-    <div class="yt-search-wrap" id="ytSearchWrap">
-      <div class="yt-search-row">
-        <input class="yt-input" id="ytInput" type="text" placeholder="YouTube'da ara..." onkeydown="if(event.key==='Enter') searchYoutube()">
-        <button class="yt-search-btn" onclick="searchYoutube()">Ara</button>
+    <div class="media-row" id="mediaRow">
+      <!-- YouTube Col -->
+      <div class="youtube-col" id="youtubeCol" style="display:none;">
+        <div class="yt-search-wrap" id="ytSearchWrap">
+          <div class="yt-search-row">
+            <input class="yt-input" id="ytInput" type="text" placeholder="YouTube'da ara..." onkeydown="if(event.key==='Enter') searchYoutube()">
+            <button class="yt-search-btn" onclick="searchYoutube()">Ara</button>
+          </div>
+          <div class="yt-results" id="ytResults"></div>
+          <div class="yt-player-wrap" id="ytPlayerWrap" style="display:none; aspect-ratio:16/9;">
+            <div id="ytPlayerDiv" style="width:100%;height:100%;"></div>
+          </div>
+        </div>
       </div>
-      <div class="yt-results" id="ytResults"></div>
-      <div class="yt-player-wrap" id="ytPlayerWrap">
-        <div id="ytPlayerDiv" style="width:100%;height:100%;"></div>
-      </div>
-    </div>
-    <!-- Camera -->
-    <div class="camera-wrap">
+      <!-- Camera Col -->
+      <div class="camera-col visible" id="cameraCol">
+        <button class="camera-toggle-btn" onclick="toggleCameraView()" id="cameraToggleBtn">
+          <span id="cameraToggleIcon">👁</span> Kamerayı Gizle
+        </button>
+        <div class="camera-wrap">
       <div class="corner corner-tl"></div><div class="corner corner-tr"></div>
       <div class="corner corner-bl"></div><div class="corner corner-br"></div>
       <div class="camera-placeholder" id="placeholder">
@@ -188,9 +203,10 @@
         <div class="gesture-badge" id="gestureBadge">—</div>
         <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
       </div>
+        </div>
+        <button class="start-btn" id="startBtn" onclick="toggleCamera()">Kamerayı Başlat</button>
+      </div>
     </div>
-    <button class="start-btn" id="startBtn" onclick="toggleCamera()">Kamerayı Başlat</button>
-  </div>
   <div class="sidebar">
     <div class="card">
       <div class="card-label">Son komut</div>
@@ -242,18 +258,34 @@ function onYouTubeIframeAPIReady() {
 function toggleYoutube() {
   youtubeMode = !youtubeMode;
   const btn = document.getElementById('ytBtn');
-  const wrap = document.getElementById('ytSearchWrap');
+  const col = document.getElementById('youtubeCol');
   if (youtubeMode) {
     btn.textContent = 'YouTube Aktif';
     btn.className = 'yt-btn active';
-    wrap.style.display = 'flex';
+    col.style.display = 'flex';
+    document.getElementById('ytSearchWrap').style.display = 'flex';
   } else {
     btn.textContent = 'YouTube Modu';
     btn.className = 'yt-btn';
-    wrap.style.display = 'none';
+    col.style.display = 'none';
     document.getElementById('ytResults').style.display = 'none';
     document.getElementById('ytPlayerWrap').style.display = 'none';
     if (ytPlayerObj) { ytPlayerObj.destroy(); ytPlayerObj = null; }
+  }
+}
+
+function toggleCameraView() {
+  const col = document.getElementById('cameraCol');
+  const btn = document.getElementById('cameraToggleBtn');
+  const icon = document.getElementById('cameraToggleIcon');
+  if (col.classList.contains('visible')) {
+    col.classList.remove('visible');
+    col.classList.add('hidden');
+    btn.innerHTML = '<span>👁</span> Kamerayı Göster';
+  } else {
+    col.classList.remove('hidden');
+    col.classList.add('visible');
+    btn.innerHTML = '<span>👁</span> Kamerayı Gizle';
   }
 }
 
