@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GestureControl</title>
-<script src="https://unpkg.com/@mediapipe/tasks-vision@0.10.0/vision_bundle.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@mediapipe/tasks-vision@0.10.0/vision_bundle.cjs" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -393,33 +393,7 @@ async function toggleCamera() {
     if(!handLandmarker) await loadModel();
     const stream = await navigator.mediaDevices.getUserMedia({video: true});
     video.srcObject=stream;
-    await new Promise(r=>video.onloadedmetadata=r);
-    video.play();
-    video.style.display='block';
-    document.getElementById('placeholder').style.display='none';
-    running=true; setStatus(true);
-    btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Durdur';
-    btn.classList.add('running'); btn.disabled=false;
-    detect();
-  } catch(e){ btn.textContent='Kamera erişimi reddedildi'; btn.disabled=false; }
-}
-
-function setStatus(active) {
-  const pill=document.getElementById('statusPill');
-  pill.className='status-pill'+(active?' active':'');
-  document.getElementById('statusText').textContent=active?'Kamera aktif':'Hazır';
-}
-
-// Init
-window.addEventListener('load', async () => {
-  await new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = 'https://unpkg.com/@mediapipe/tasks-vision@0.10.0/vision_bundle.js';
-    script.crossOrigin = 'anonymous';
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
+    
 
   // Callback kontrolü
   if(window.location.search.includes('code=')) { await handleCallback(); return; }
