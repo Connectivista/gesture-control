@@ -169,6 +169,17 @@
 </main>
 
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
+<script>
+// YouTube IFrame API
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+var ytPlayer = null;
+function onYouTubeIframeAPIReady() {
+  console.log('YouTube IFrame API hazir');
+}
+</script>
 <script type="module">
 import { FilesetResolver, HandLandmarker } from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs';
 
@@ -178,7 +189,7 @@ const YOUTUBE_API_KEY = 'AIzaSyBIjS4tPrIc7wBIANwEr7SlPnCfJCkFWzk';
 
 let youtubeMode = false;
 
-let youtubeTabId = null;
+
 const REDIRECT_URI = 'https://connectivista.github.io/gesture-control/';
 const SCOPES = 'user-modify-playback-state user-read-playback-state';
 
