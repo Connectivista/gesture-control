@@ -468,6 +468,7 @@ function recognize(lm, handedness) {
   let raw;
   if(f.join('')==='11111') raw='OPEN_HAND';
   else if(f.join('')==='01000') raw='POINT_UP';
+  else if(f.join('')==='01100') raw='PEACE';
   else if(f[0]===1&&f[1]===1&&f[2]===0&&f[3]===0&&f[4]===0) {
     raw = pinchDistance(lm) > 0.08 ? 'THUMB_UP' : 'THUMB_SIDE';
   }
