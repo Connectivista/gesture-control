@@ -320,6 +320,8 @@ const LANG = {
     ytSelect: 'YouTube: Select a video',
     ytForward: 'YouTube: +10s',
     ytBackward: 'YouTube: -10s',
+    ytVolUp: 'YouTube: Volume Up',
+    ytVolDown: 'YouTube: Volume Down',
     // Footer
     about: 'About',
     privacy: 'Privacy Policy',
@@ -384,6 +386,8 @@ const LANG = {
     ytSelect: 'YouTube: Video seç',
     ytForward: 'YouTube: +10sn',
     ytBackward: 'YouTube: -10sn',
+    ytVolUp: 'YouTube: Ses Aç',
+    ytVolDown: 'YouTube: Ses Kıs',
     // Footer
     about: 'Hakkında',
     privacy: 'Gizlilik Politikası',
@@ -692,11 +696,11 @@ async function execSpotifyAction(gesture) {
 
 async function execYoutubeAction(gesture) {
   const p = window.ytPlayerObj;
-  if (!p || typeof p.getPlayerState !== 'function') return 'YouTube: Select a video';
+  if (!p || typeof p.getPlayerState !== 'function') return LANG[currentLang].ytSelect;
   switch(gesture) {
     case 'OPEN_HAND':
       if (p.getPlayerState() === 1) { p.pauseVideo(); return 'YouTube: Stopuldu'; }
-      else { p.playVideo(); return 'YouTube: Playing'; }
+      else { p.playVideo(); return LANG[currentLang].ytPlaying; }
     case 'THUMB_UP': {
       const vol = Math.min(100, p.getVolume() + 10);
       p.setVolume(vol); return 'YouTube: Ses ' + vol + '%';
@@ -706,10 +710,10 @@ async function execYoutubeAction(gesture) {
       p.setVolume(vol); return 'YouTube: Ses ' + vol + '%';
     }
     case 'POINT_UP': {
-      p.seekTo(p.getCurrentTime() + 10, true); return 'YouTube: +10s';
+      p.seekTo(p.getCurrentTime() + 10, true); return LANG[currentLang].ytForward;
     }
     case 'PEACE': {
-      p.seekTo(Math.max(0, p.getCurrentTime() - 10), true); return 'YouTube: -10s';
+      p.seekTo(Math.max(0, p.getCurrentTime() - 10), true); return LANG[currentLang].ytBackward;
     }
   }
   return gesture;
