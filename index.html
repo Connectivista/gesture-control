@@ -3,7 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GestureControl</title>
+<title>GestureControl — Control Music With Hand Gestures</title>
+<meta name="description" content="Control your music with hand gestures. No touch needed — wave your hand at your camera to play, pause, skip tracks and adjust volume.">
+<meta property="og:title" content="GestureControl — Control Music With Hand Gestures">
+<meta property="og:description" content="Control your music with hand gestures. While cooking, working out, or whenever your hands are busy.">
+<meta property="og:url" content="https://gesturecontrol.app">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GestureControl">
+<meta name="twitter:description" content="Control your music with hand gestures. No touch needed.">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 <script src="https://www.youtube.com/iframe_api"></script>
@@ -217,7 +225,7 @@
     </div>
   <div class="sidebar">
     <div class="card">
-      <div class="card-label">Son komut</div>
+      <div class="card-label" id="labelLastCommand">LAST COMMAND</div>
       <div class="last-command-value" id="lastCommand">—</div>
       <div class="last-command-sub" id="lastGesture">No gesture yet</div>
       <div class="vol-bar-wrap" id="volWrap" style="display:none">
@@ -226,9 +234,9 @@
       </div>
     </div>
     <div class="card">
-      <div class="card-label">Jestler</div>
+      <div class="card-label" id="labelGestures">GESTURES</div>
       <div class="gesture-list">
-        <div class="gesture-row" id="row-OPEN_HAND"><div class="gesture-left"><div class="gesture-icon">✋</div><span class="gesture-name">Open hand</span></div><span class="gesture-action">Play/Stop</span></div>
+        <div class="gesture-row" id="row-OPEN_HAND"><div class="gesture-left"><div class="gesture-icon">✋</div><span class="gesture-name">Open hand</span></div><span class="gesture-action">Play/Pause</span></div>
         <div class="gesture-row" id="row-THUMB_UP"><div class="gesture-left"><div class="gesture-icon">🤌</div><span class="gesture-name">Thumb+Index Open</span></div><span class="gesture-action">Volume up</span></div>
         <div class="gesture-row" id="row-THUMB_SIDE"><div class="gesture-left"><div class="gesture-icon">👌</div><span class="gesture-name">Thumb+Index Closed</span></div><span class="gesture-action">Volume down</span></div>
         <div class="gesture-row" id="row-POINT_UP"><div class="gesture-left"><div class="gesture-icon">☝️</div><span class="gesture-name">Index finger</span></div><span class="gesture-action">Next</span></div>
@@ -236,7 +244,7 @@
       </div>
     </div>
     <div class="card">
-      <div class="card-label">Geçmiş</div>
+      <div class="card-label" id="labelHistory">HISTORY</div>
       <div class="log-list" id="logList">
         <div class="log-item"><span class="log-action" style="color:var(--gray)">No commands yet</span></div>
       </div>
@@ -410,11 +418,14 @@ function setLang(lang) {
   document.querySelector('.yt-search-btn').textContent = t.search;
 
   // Sidebar
-  document.querySelector('.card-label').textContent = t.lastCommand;
+  const lc = document.getElementById('labelLastCommand');
+  const lg = document.getElementById('labelGestures');
+  const lh = document.getElementById('labelHistory');
+  if (lc) lc.textContent = t.lastCommand;
+  if (lg) lg.textContent = t.gestures;
+  if (lh) lh.textContent = t.history;
   document.getElementById('lastGesture').textContent = t.noGesture;
-  const cardLabels = document.querySelectorAll('.card-label');
-  if (cardLabels[1]) cardLabels[1].textContent = t.gestures;
-  if (cardLabels[2]) cardLabels[2].textContent = t.history;
+
 
   // Jest listesi
   document.querySelector('#row-OPEN_HAND .gesture-name').textContent = t.openHand;
@@ -844,7 +855,7 @@ if(window.location.search.includes('code=')) {
 }
 </script>
 <footer style="text-align:center; padding:24px 32px; border-top:1px solid rgba(127,119,221,0.15); font-family:'DM Mono',monospace; font-size:12px; color:#6b6a7a; margin-top:40px; position:relative; z-index:10;">
-  © 2026 GestureControl &nbsp;·&nbsp; <a href="/gesture-control/about.html" style="color:#7F77DD; text-decoration:none;">About</a> &nbsp;·&nbsp; <a href="/gesture-control/privacy.html" style="color:#7F77DD; text-decoration:none;">Privacy Policy</a>
+  © 2026 GestureControl &nbsp;·&nbsp; <a href="/about.html" style="color:#7F77DD; text-decoration:none;">About</a> &nbsp;·&nbsp; <a href="/privacy.html" style="color:#7F77DD; text-decoration:none;">Privacy Policy</a>
 </footer>
 </body>
 </html>
