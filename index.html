@@ -137,10 +137,9 @@
         <div class="onboarding-step-num">3</div>
         <div>
           <div class="onboarding-step-text">Make a gesture</div>
-          <div class="onboarding-step-sub">✋ Çal/Stop &nbsp;☝️ Next &nbsp;✌️ Previous</div>
+          <div class="onboarding-step-sub">Open hand → Play/Pause &nbsp;|&nbsp; Index finger → Next &nbsp;|&nbsp; V sign → Previous</div>
         </div>
       </div>
-    </div>
       <div class="onboarding-step">
         <div class="onboarding-step-num">4</div>
         <div>
@@ -225,7 +224,7 @@
     <div class="card">
       <div class="card-label">Jestler</div>
       <div class="gesture-list">
-        <div class="gesture-row" id="row-OPEN_HAND"><div class="gesture-left"><div class="gesture-icon">✋</div><span class="gesture-name">Open hand</span></div><span class="gesture-action">Çal/Stop</span></div>
+        <div class="gesture-row" id="row-OPEN_HAND"><div class="gesture-left"><div class="gesture-icon">✋</div><span class="gesture-name">Open hand</span></div><span class="gesture-action">Play/Stop</span></div>
         <div class="gesture-row" id="row-THUMB_UP"><div class="gesture-left"><div class="gesture-icon">🤌</div><span class="gesture-name">Thumb+Index Open</span></div><span class="gesture-action">Volume up</span></div>
         <div class="gesture-row" id="row-THUMB_SIDE"><div class="gesture-left"><div class="gesture-icon">👌</div><span class="gesture-name">Thumb+Index Closed</span></div><span class="gesture-action">Volume down</span></div>
         <div class="gesture-row" id="row-POINT_UP"><div class="gesture-left"><div class="gesture-icon">☝️</div><span class="gesture-name">Index finger</span></div><span class="gesture-action">Next</span></div>
@@ -346,7 +345,7 @@ const REDIRECT_URI = 'https://gesturecontrol.app/';
 const SCOPES = 'user-modify-playback-state user-read-playback-state';
 
 const GESTURE_LABELS = { OPEN_HAND:'Open Hand', THUMB_UP:'Thumb+Index Open', THUMB_SIDE:'Thumb+Index Closed', POINT_UP:'Index Finger', PEACE:'V Sign' };
-const GESTURE_ACTIONS = { OPEN_HAND:'Çal/Stop', THUMB_UP:'Volume Up', THUMB_SIDE:'Volume Down', POINT_UP:'Next Şarkı', PEACE:'Previous Şarkı' };
+const GESTURE_ACTIONS = { OPEN_HAND:'Play/Stop', THUMB_UP:'Volume Up', THUMB_SIDE:'Volume Down', POINT_UP:'Next Şarkı', PEACE:'Previous Şarkı' };
 const THRESHOLDS = { THUMB_UP:6, THUMB_SIDE:6, OPEN_HAND:12, POINT_UP:12, PEACE:12 };
 const COOLDOWNS = { THUMB_UP:800, THUMB_SIDE:800, OPEN_HAND:1500, POINT_UP:1500, PEACE:1500 };
 
